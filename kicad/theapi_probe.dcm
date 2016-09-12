@@ -1,0 +1,7 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP MAX7219
+D Drive up 64 Leds or a 7-Segment display with 8 digits
+$ENDCMP
+#
+#End Doc Library
