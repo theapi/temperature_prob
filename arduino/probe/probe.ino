@@ -2,12 +2,19 @@
  * Two temperature probes with an ATTINY 85 & a MAX7219 to two 7 segment displays.
  */
 
-#define PIN_THERMISTOR_A PB3
-#define PIN_THERMISTOR_B PB4
-
-#define DRIVER_DIN  PB0
-#define DRIVER_SCK  PB2
-#define DRIVER_LOAD PB1
+#if defined( __AVR_ATtiny85__ )
+  #define PIN_THERMISTOR_A PB3
+  #define PIN_THERMISTOR_B PB4
+  #define DRIVER_DIN  PB0
+  #define DRIVER_SCK  PB2
+  #define DRIVER_LOAD PB1
+#else
+  #define PIN_THERMISTOR_A A0
+  #define PIN_THERMISTOR_B A1
+  #define DRIVER_DIN  12
+  #define DRIVER_SCK  11
+  #define DRIVER_LOAD 10
+#endif
 
 void setup() {
   pinMode(DRIVER_DIN, OUTPUT);
