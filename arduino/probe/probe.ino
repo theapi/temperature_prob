@@ -16,12 +16,31 @@
   #define DRIVER_LOAD 10
 #endif
 
+#include "Max72xx.h"
+
+Max72xx driver = Max72xx(DRIVER_DIN, DRIVER_SCK, DRIVER_LOAD);
+
 void setup() {
+
+  driver.shutdown(false);
+  driver.testOn();
+  delay(3000);
+  driver.testOff();
+
+  driver.shutdown(true);
+
+  /*
   pinMode(DRIVER_DIN, OUTPUT);
   pinMode(DRIVER_SCK, OUTPUT);
   pinMode(DRIVER_LOAD, OUTPUT);
 
+  digitalWrite(DRIVER_LOAD,HIGH);
   max72xxDisplayTestOn();
+
+  delay(3000);
+  max72xxDisplayTestOff();
+  max72xxShutdown();
+  */
 }
 
 /**
@@ -42,10 +61,12 @@ double thermistor(int raw_adc) {
  * Sends the 16 bit serial packet to the driver
  */
 void max72xxSendPacket(int8_t address, int8_t data) {
+  digitalWrite(DRIVER_LOAD,LOW);
   // shift out highbyte
   shiftOut(DRIVER_DIN, DRIVER_SCK, MSBFIRST, address);
   // shift out lowbyte
   shiftOut(DRIVER_DIN, DRIVER_SCK, MSBFIRST, data);
+  digitalWrite(DRIVER_LOAD,HIGH);
 }
 
 /**
@@ -58,8 +79,12 @@ void max72xxDisplayTestOn() {
 /**
  * Set the display mode off.
  */
-void max72xxDisplayTestOf() {
+void max72xxDisplayTestOff() {
   max72xxSendPacket(B00001111, B00000000);
+}
+
+void max72xxShutdown() {
+  max72xxSendPacket(B00001100, B00000000);
 }
 
 void loop() {
