@@ -20,9 +20,9 @@ void setup() {
   pinMode(DRIVER_DIN, OUTPUT);
   pinMode(DRIVER_SCK, OUTPUT);
   pinMode(DRIVER_LOAD, OUTPUT);
-}
 
-// @todo max7219
+  max72xxDisplayTestOn();
+}
 
 /**
  * Do a bunch of mathmatics on the voltage reading from the sensor.
@@ -36,6 +36,30 @@ double thermistor(int raw_adc) {
  temp = temp - 273.15;            // Convert Kelvin to Celcius
  
  return temp;
+}
+
+/**
+ * Sends the 16 bit serial packet to the driver
+ */
+void max72xxSendPacket(int8_t address, int8_t data) {
+  // shift out highbyte
+  shiftOut(DRIVER_DIN, DRIVER_SCK, MSBFIRST, address);
+  // shift out lowbyte
+  shiftOut(DRIVER_DIN, DRIVER_SCK, MSBFIRST, data);
+}
+
+/**
+ * Set the display mode on.
+ */
+void max72xxDisplayTestOn() {
+  max72xxSendPacket(B00001111, B00000001);
+}
+
+/**
+ * Set the display mode off.
+ */
+void max72xxDisplayTestOf() {
+  max72xxSendPacket(B00001111, B00000000);
 }
 
 void loop() {
