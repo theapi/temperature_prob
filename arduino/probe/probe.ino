@@ -23,24 +23,15 @@ Max72xx driver = Max72xx(DRIVER_DIN, DRIVER_SCK, DRIVER_LOAD);
 void setup() {
 
   driver.shutdown(false);
+  // Code B decode for digits 7–0
+  driver.decodeMode(0xFF);
+  
   driver.testOn();
   delay(3000);
   driver.testOff();
 
-  driver.shutdown(true);
+  //driver.shutdown(true);
 
-  /*
-  pinMode(DRIVER_DIN, OUTPUT);
-  pinMode(DRIVER_SCK, OUTPUT);
-  pinMode(DRIVER_LOAD, OUTPUT);
-
-  digitalWrite(DRIVER_LOAD,HIGH);
-  max72xxDisplayTestOn();
-
-  delay(3000);
-  max72xxDisplayTestOff();
-  max72xxShutdown();
-  */
 }
 
 /**
@@ -57,40 +48,23 @@ double thermistor(int raw_adc) {
  return temp;
 }
 
-/**
- * Sends the 16 bit serial packet to the driver
- */
-void max72xxSendPacket(int8_t address, int8_t data) {
-  digitalWrite(DRIVER_LOAD,LOW);
-  // shift out highbyte
-  shiftOut(DRIVER_DIN, DRIVER_SCK, MSBFIRST, address);
-  // shift out lowbyte
-  shiftOut(DRIVER_DIN, DRIVER_SCK, MSBFIRST, data);
-  digitalWrite(DRIVER_LOAD,HIGH);
-}
-
-/**
- * Set the display mode on.
- */
-void max72xxDisplayTestOn() {
-  max72xxSendPacket(B00001111, B00000001);
-}
-
-/**
- * Set the display mode off.
- */
-void max72xxDisplayTestOff() {
-  max72xxSendPacket(B00001111, B00000000);
-}
-
-void max72xxShutdown() {
-  max72xxSendPacket(B00001100, B00000000);
-}
-
 void loop() {
+
+  driver.setCodeDigit(1, B1100); // H
+  driver.setCodeDigit(2, B1011); // E
+  driver.setCodeDigit(3, B1101); // L
+  driver.setCodeDigit(4, B1110); // P
+
+  driver.setCodeDigit(5, 5);
+  driver.setCodeDigit(6, 6);
+  driver.setCodeDigit(7, 7);
+  driver.setCodeDigit(8, 8);
+  
   double temperatureA = thermistor(analogRead(PIN_THERMISTOR_A));
   delay(100); // delay in between reads for stability
   double temperatureB = thermistor(analogRead(PIN_THERMISTOR_B));
   delay(100); // delay in between reads for stability
+
+  delay(2000);
 }
 

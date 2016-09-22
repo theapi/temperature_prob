@@ -57,3 +57,14 @@ void Max72xx::shutdown(bool b) {
   }
 }
 
+void Max72xx::decodeMode(int8_t data) {
+  sendPacket(0x09, data);
+}
+
+/**
+ * Require decode mode to be on for the digit.
+ */
+void Max72xx::setCodeDigit(int8_t address, int8_t data) {
+  sendPacket(address, data);
+}
+
