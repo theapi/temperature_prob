@@ -26,11 +26,21 @@ void setup() {
   // Code B decode for digits 7–0
   driver.decodeMode(0xFF);
   
-  driver.testOn();
-  delay(3000);
-  driver.testOff();
+  //driver.testOn();
+  //delay(3000);
+  //driver.testOff();
 
   //driver.shutdown(true);
+
+  driver.setCodeDigit(1, B1100, false); // H
+  driver.setCodeDigit(2, B1011, false); // E
+  driver.setCodeDigit(3, B1101, false); // L
+  driver.setCodeDigit(4, 0, false);     // 0
+  driver.setCodeDigit(5, B1111, false);
+  driver.setCodeDigit(6, B1111, false);
+  driver.setCodeDigit(7, B1111, false);
+  driver.setCodeDigit(8, B1111, false);
+  delay(1000);
 
 }
 
@@ -49,7 +59,7 @@ double thermistor(int raw_adc) {
 }
 
 void loop() {
-
+/*
   driver.setCodeDigit(1, B1100); // H
   driver.setCodeDigit(2, B1011); // E
   driver.setCodeDigit(3, B1101); // L
@@ -59,12 +69,27 @@ void loop() {
   driver.setCodeDigit(6, 6);
   driver.setCodeDigit(7, 7);
   driver.setCodeDigit(8, 8);
+  */
   
   double temperatureA = thermistor(analogRead(PIN_THERMISTOR_A));
   delay(100); // delay in between reads for stability
   double temperatureB = thermistor(analogRead(PIN_THERMISTOR_B));
   delay(100); // delay in between reads for stability
 
-  delay(2000);
+  char temperatureAstr[6];
+  dtostrf(temperatureA, 5, 2, temperatureAstr);
+  driver.setCodeDigit(1, temperatureAstr[0], false);
+  driver.setCodeDigit(2, temperatureAstr[1], true);
+  driver.setCodeDigit(3, temperatureAstr[3], false);
+  driver.setCodeDigit(4, temperatureAstr[4], false);
+
+  char temperatureBstr[6];
+  dtostrf(temperatureB, 5, 2, temperatureBstr);
+  driver.setCodeDigit(5, temperatureBstr[0], false);
+  driver.setCodeDigit(6, temperatureBstr[1], true);
+  driver.setCodeDigit(7, temperatureBstr[3], false);
+  driver.setCodeDigit(8, temperatureBstr[4], false);
+
+  delay(500);
 }
 

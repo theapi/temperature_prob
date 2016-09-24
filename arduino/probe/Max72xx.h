@@ -46,7 +46,7 @@ class Max72xx {
 
       void decodeMode(int8_t data);
 
-      void setCodeDigit(int8_t address, int8_t data);
+      void setCodeDigit(int8_t address, int8_t data, boolean dp);
 };
 
 #endif

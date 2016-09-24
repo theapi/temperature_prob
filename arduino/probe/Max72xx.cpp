@@ -62,9 +62,13 @@ void Max72xx::decodeMode(int8_t data) {
 }
 
 /**
- * Require decode mode to be on for the digit.
+ * Requiree decode mode to be on for the digit.
  */
-void Max72xx::setCodeDigit(int8_t address, int8_t data) {
-  sendPacket(address, data);
+void Max72xx::setCodeDigit(int8_t address, int8_t data, boolean dp) {
+  if (dp) {
+    sendPacket(address, data + B10000000);
+  } else {
+    sendPacket(address, data);
+  }
 }
 
