@@ -5,7 +5,9 @@ Max72xx::Max72xx(int dataPin, int clkPin, int latchPin) {
   _din = dataPin;
   _clk = clkPin;
   _load = latchPin;
+}
 
+void Max72xx::setup() {
   pinMode(_din, OUTPUT);
   pinMode(_clk, OUTPUT);
   pinMode(_load, OUTPUT);
@@ -13,6 +15,7 @@ Max72xx::Max72xx(int dataPin, int clkPin, int latchPin) {
   shutdown(1);
   setScanLimit(7);
   setIntensity(10);
+
 }
 
 /**

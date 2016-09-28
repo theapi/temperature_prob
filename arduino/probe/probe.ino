@@ -1,5 +1,9 @@
 /**
  * Two temperature probes with an ATTINY 85 & a MAX7219 to two 7 segment displays.
+ * 
+   [Ground] ---- [Thermistor] -------|------- [10k-Resistor] ---- [+5v]
+                                     |
+                                  Analog Pin
  */
 
 #if defined( __AVR_ATtiny85__ )
@@ -18,20 +22,31 @@
 
 #include "Max72xx.h"
 
+// how many samples to take and average, more takes longer
+// but is more 'smooth'
+#define NUMSAMPLES 8
+
+// Thermistor datasheet http://uk.farnell.com/vishay-bc-components/ntcle100e3103jb0/thermistor-10k-5-ntc-rad/dp/1187031
+// resistance at 25 degrees C
+#define THERMISTOR_NOMINAL 10000      
+// temp. for nominal resistance (almost always 25 C)
+#define THERMISTER_TEMPERATURE_NOMINAL 25  
+
+// The beta coefficient of the thermistor (usually 3000-4000)
+#define THERMISTOR_BCOEFFICIENT 3977
+// the value of the 'other' resistor
+#define THERMISTOR_SERIES_RESISTOR 10000   
+
 Max72xx driver = Max72xx(DRIVER_DIN, DRIVER_SCK, DRIVER_LOAD);
 
 void setup() {
 
-  driver.shutdown(false);
+  // Initialise the driver.
+  driver.setup();
+  
   // Code B decode for digits 7–0
   driver.decodeMode(0xFF);
   
-  //driver.testOn();
-  //delay(3000);
-  //driver.testOff();
-
-  //driver.shutdown(true);
-
   driver.setCodeDigit(1, B1100, false); // H
   driver.setCodeDigit(2, B1011, false); // E
   driver.setCodeDigit(3, B1101, false); // L
@@ -40,55 +55,68 @@ void setup() {
   driver.setCodeDigit(6, B1111, false);
   driver.setCodeDigit(7, B1111, false);
   driver.setCodeDigit(8, B1111, false);
+
+  // Turn the display on.
+  driver.shutdown(false);
   delay(1000);
+
+  driver.setCodeDigit(1, B1111, false);
+  driver.setCodeDigit(2, B1111, false);
+  driver.setCodeDigit(3, B1111, false);
+  driver.setCodeDigit(4, B1111, false);
 
 }
 
 /**
- * Do a bunch of mathmatics on the voltage reading from the sensor.
- * 
- * @see http://playground.arduino.cc/ComponentLib/Thermistor2
+ * Get the temperature from the thermistor
  */
-double thermistor(int raw_adc) {   
- double temp;
- temp = log(10000.0 * ((1024.0/raw_adc-1))); 
- temp = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * temp * temp ))* temp );
- temp = temp - 273.15;            // Convert Kelvin to Celcius
- 
- return temp;
+int readTemperature(byte pin)
+{
+  int count = 0;
+  int sum = 0;
+  double value;
+  int rounded;
+  
+  while (count < NUMSAMPLES) {
+    sum += analogRead(pin);
+    count++;
+  }
+  value = (int)sum / NUMSAMPLES;
+
+  // convert the value to resistance
+  value = 1023 / value - 1;
+  value = THERMISTOR_SERIES_RESISTOR / value;
+
+
+  double steinhart;
+  steinhart = value / THERMISTOR_NOMINAL;     // (R/Ro)
+  steinhart = log(steinhart);                  // ln(R/Ro)
+  steinhart /= THERMISTOR_BCOEFFICIENT;                   // 1/B * ln(R/Ro)
+  steinhart += 1.0 / (THERMISTER_TEMPERATURE_NOMINAL + 273.15); // + (1/To)
+  steinhart = 1.0 / steinhart;                 // Invert
+  steinhart -= 273.15;   
+
+  rounded = steinhart * 10.0;
+  return rounded;
 }
 
 void loop() {
-/*
-  driver.setCodeDigit(1, B1100); // H
-  driver.setCodeDigit(2, B1011); // E
-  driver.setCodeDigit(3, B1101); // L
-  driver.setCodeDigit(4, B1110); // P
 
-  driver.setCodeDigit(5, 5);
-  driver.setCodeDigit(6, 6);
-  driver.setCodeDigit(7, 7);
-  driver.setCodeDigit(8, 8);
-  */
+  int temperatureA = readTemperature(PIN_THERMISTOR_A);
+  int temperatureB = readTemperature(PIN_THERMISTOR_B);
+
+  char temperatureAstr[4];
+  itoa(temperatureA,temperatureAstr,10);
   
-  double temperatureA = thermistor(analogRead(PIN_THERMISTOR_A));
-  delay(100); // delay in between reads for stability
-  double temperatureB = thermistor(analogRead(PIN_THERMISTOR_B));
-  delay(100); // delay in between reads for stability
-
-  char temperatureAstr[6];
-  dtostrf(temperatureA, 5, 2, temperatureAstr);
   driver.setCodeDigit(1, temperatureAstr[0], false);
   driver.setCodeDigit(2, temperatureAstr[1], true);
-  driver.setCodeDigit(3, temperatureAstr[3], false);
-  driver.setCodeDigit(4, temperatureAstr[4], false);
+  driver.setCodeDigit(3, temperatureAstr[2], false);
 
-  char temperatureBstr[6];
-  dtostrf(temperatureB, 5, 2, temperatureBstr);
+  char temperatureBstr[4];
+  itoa(temperatureB,temperatureBstr,10);
   driver.setCodeDigit(5, temperatureBstr[0], false);
   driver.setCodeDigit(6, temperatureBstr[1], true);
-  driver.setCodeDigit(7, temperatureBstr[3], false);
-  driver.setCodeDigit(8, temperatureBstr[4], false);
+  driver.setCodeDigit(7, temperatureBstr[2], false);
 
   delay(500);
 }

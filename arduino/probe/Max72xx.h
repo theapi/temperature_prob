@@ -24,6 +24,11 @@ class Max72xx {
       Max72xx(int dataPin, int clkPin, int latchPin);
 
       /**
+       * Initialise the driver.
+       */
+      void setup();
+
+      /**
        * Sends the 16 bit serial packet to the driver
        */
       void sendPacket(int8_t address, int8_t data);
@@ -36,6 +41,9 @@ class Max72xx {
        */
       void setScanLimit(byte limit);
 
+      /**
+       * 0 - 15
+       */
       void setIntensity(byte intensity);
 
       void testOn();
