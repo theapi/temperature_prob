@@ -76,6 +76,9 @@ int readTemperature(byte pin)
   int sum = 0;
   double value;
   int rounded;
+
+  // Junk the first reading as the analog pin mux just changed.
+  analogRead(pin);
   
   while (count < NUMSAMPLES) {
     sum += analogRead(pin);
