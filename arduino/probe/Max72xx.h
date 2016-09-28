@@ -15,6 +15,12 @@ class Max72xx {
         byte _load;
 
     public:
+
+       static const byte Blank = B1111;
+       static const byte H = B1100;
+       static const byte E = B1011;
+       static const byte L = B1101;
+    
       /**
        * Constructor
        * dataPin    shifts the data out
@@ -52,9 +58,13 @@ class Max72xx {
 
       void shutdown(bool b);
 
+      void displayOn();
+
+      void displayOff();
+      
       void decodeMode(int8_t data);
 
-      void setCodeDigit(int8_t address, int8_t data, boolean dp);
+      void setDigit(int8_t address, int8_t data, boolean dp);
 };
 
 #endif

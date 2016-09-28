@@ -60,14 +60,22 @@ void Max72xx::shutdown(bool b) {
   }
 }
 
+void Max72xx::displayOn() {
+  shutdown(false);
+}
+
+void Max72xx::displayOff() {
+  shutdown(true);
+}
+
 void Max72xx::decodeMode(int8_t data) {
   sendPacket(0x09, data);
 }
 
 /**
- * Requiree decode mode to be on for the digit.
+ * Send data to a digit.
  */
-void Max72xx::setCodeDigit(int8_t address, int8_t data, boolean dp) {
+void Max72xx::setDigit(int8_t address, int8_t data, boolean dp) {
   if (dp) {
     sendPacket(address, data + B10000000);
   } else {

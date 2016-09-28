@@ -47,23 +47,24 @@ void setup() {
   // Code B decode for digits 7–0
   driver.decodeMode(0xFF);
   
-  driver.setCodeDigit(1, B1100, false); // H
-  driver.setCodeDigit(2, B1011, false); // E
-  driver.setCodeDigit(3, B1101, false); // L
-  driver.setCodeDigit(4, 0, false);     // 0
-  driver.setCodeDigit(5, B1111, false);
-  driver.setCodeDigit(6, B1111, false);
-  driver.setCodeDigit(7, B1111, false);
-  driver.setCodeDigit(8, B1111, false);
+  driver.setDigit(1, driver.H, false); // H
+  driver.setDigit(2, driver.E, false); // E
+  driver.setDigit(3, driver.L, false); // L
+  driver.setDigit(4, 0, false);        // 0
+  
+  driver.setDigit(5, driver.Blank, false);
+  driver.setDigit(6, driver.Blank, false);
+  driver.setDigit(7, driver.Blank, false);
+  driver.setDigit(8, driver.Blank, false);
 
   // Turn the display on.
-  driver.shutdown(false);
+  driver.displayOn();
   delay(1000);
 
-  driver.setCodeDigit(1, B1111, false);
-  driver.setCodeDigit(2, B1111, false);
-  driver.setCodeDigit(3, B1111, false);
-  driver.setCodeDigit(4, B1111, false);
+  driver.setDigit(1, driver.Blank, false);
+  driver.setDigit(2, driver.Blank, false);
+  driver.setDigit(3, driver.Blank, false);
+  driver.setDigit(4, driver.Blank, false);
 
 }
 
@@ -109,17 +110,17 @@ void loop() {
   int temperatureB = readTemperature(PIN_THERMISTOR_B);
 
   char temperatureAstr[4];
-  itoa(temperatureA,temperatureAstr,10);
+  itoa(temperatureA, temperatureAstr,10);
   
-  driver.setCodeDigit(1, temperatureAstr[0], false);
-  driver.setCodeDigit(2, temperatureAstr[1], true);
-  driver.setCodeDigit(3, temperatureAstr[2], false);
+  driver.setDigit(1, temperatureAstr[0], false);
+  driver.setDigit(2, temperatureAstr[1], true);
+  driver.setDigit(3, temperatureAstr[2], false);
 
   char temperatureBstr[4];
-  itoa(temperatureB,temperatureBstr,10);
-  driver.setCodeDigit(5, temperatureBstr[0], false);
-  driver.setCodeDigit(6, temperatureBstr[1], true);
-  driver.setCodeDigit(7, temperatureBstr[2], false);
+  itoa(temperatureB, temperatureBstr,10);
+  driver.setDigit(5, temperatureBstr[0], false);
+  driver.setDigit(6, temperatureBstr[1], true);
+  driver.setDigit(7, temperatureBstr[2], false);
 
   delay(500);
 }
