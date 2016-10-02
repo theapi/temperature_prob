@@ -7,8 +7,8 @@
  */
 
 #if defined( __AVR_ATtiny85__ )
-  #define PIN_THERMISTOR_A PB3
-  #define PIN_THERMISTOR_B PB4
+  #define PIN_THERMISTOR_A A3
+  #define PIN_THERMISTOR_B A2
   #define DRIVER_DIN  PB0
   #define DRIVER_SCK  PB2
   #define DRIVER_LOAD PB1
@@ -107,20 +107,19 @@ int readTemperature(byte pin)
 void loop() {
 
   int temperatureA = readTemperature(PIN_THERMISTOR_A);
-  int temperatureB = readTemperature(PIN_THERMISTOR_B);
-
   char temperatureAstr[4];
-  itoa(temperatureA, temperatureAstr,10);
+  itoa(temperatureA, temperatureAstr, 10);
   
-  driver.setDigit(1, temperatureAstr[0], false);
-  driver.setDigit(2, temperatureAstr[1], true);
-  driver.setDigit(3, temperatureAstr[2], false);
+  driver.setDigit(2, temperatureAstr[0], false);
+  driver.setDigit(3, temperatureAstr[1], true);
+  driver.setDigit(4, temperatureAstr[2], false);
 
+  int temperatureB = readTemperature(PIN_THERMISTOR_B);
   char temperatureBstr[4];
-  itoa(temperatureB, temperatureBstr,10);
-  driver.setDigit(5, temperatureBstr[0], false);
-  driver.setDigit(6, temperatureBstr[1], true);
-  driver.setDigit(7, temperatureBstr[2], false);
+  itoa(temperatureB, temperatureBstr, 10);
+  driver.setDigit(6, temperatureBstr[0], false);
+  driver.setDigit(7, temperatureBstr[1], true);
+  driver.setDigit(8, temperatureBstr[2], false);
 
   delay(500);
 }
